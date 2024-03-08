@@ -7,13 +7,7 @@ from django.contrib.auth.models import User
 
 
 
-class AdminMessageForm(forms.ModelForm):
-    class Meta:
-        model = AdminMessage
-        fields = '__all__'
 
-    def __init__(self, *args, **kwargs):
-        super(AdminMessageForm, self).__init__(*args, **kwargs)
 
 
 
