@@ -1,0 +1,81 @@
+{% load has_group %}
+<nav class="navbar navbar-expand-lg  navbar navbar-dark bg-primary">
+  <a class="navbar-brand" href="#">Brain Boosters</a>
+  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNavAltMarkup" aria-controls="navbarNavAltMarkup" aria-expanded="false" aria-label="Toggle navigation">
+    <span class="navbar-toggler-icon"></span>
+  </button>
+  <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
+    <div class="navbar-nav">
+
+<style>
+  .hello-msg{
+    font-size: 18px;
+    color: #fff;
+    margin-right: 20px;
+  }
+</style>
+
+
+       {% if request.user|has_group:"teachers" %}
+                       <a class="nav-item nav-link" href="{% url 'teacher' %}">Home</a>
+      <a class="nav-item nav-link" href="{% url 'teacherMessages' %}">My messages</a>
+                      <a class="nav-item nav-link" href="{% url 'profile' %}">Profile</a>
+
+                    <a class="nav-item nav-link" href="{% url 'showSolutions' %}">Solutions</a>
+             <a class="nav-item nav-link" href="{% url "showStudentTeacher" %}">Studies</a>
+                <a class="nav-item nav-link" href="{% url "showMystudent" %}">my students</a>
+
+
+
+
+{% endif %}
+     {% if request.user|has_group:"admins" %}
+         <a class="nav-item nav-link" href="{% url 'dashboard' %}">Home</a>
+         <a class="nav-item nav-link" href="{% url 'profile' %}">Profile</a>
+         <a class="nav-item nav-link" href="{% url 'user_list' %}">Manage users</a>
+         <a class="nav-item nav-link" href="{% url 'showAdminMessages' %}">Messages</a>
+
+         {% endif %}
+     {% if request.user|has_group:"students" %}
+                       <a class="nav-item nav-link" href="{% url 'student_dashboard' %}">Home</a>
+      <a class="nav-item nav-link" href="{% url 'myHomeWorks' %}">My HomeWorks</a>
+         <a class="nav-item nav-link" href="{% url 'profile' %}">Profile</a>
+
+
+
+
+
+
+
+
+        {% endif %}
+
+
+
+
+
+       <a class="nav-item nav-link" href="{% url 'bugreport' %}">Report Bug </a>
+    </div>
+  </div>
+ {% if request.user|has_group:"teachers" %}
+<span class="hello-msg">Hello, {{request.user}}</span>
+  <span ><a  class="hello-msg" href="{% url 'logout' %}">Logout</a></span>
+
+{% elif request.user|has_group:"students" %}
+<span class="hello-msg">Hello, {{request.user}}</span>
+  <span ><a  class="hello-msg" href="{% url 'logout' %}">Logout</a></span>
+
+{% elif request.user|has_group:"admins" %}
+<span class="hello-msg">Hello, {{request.user}}</span>
+  <span ><a  class="hello-msg" href="{% url 'logout' %}">Logout</a></span>
+
+     {% else %}
+     <span >
+     <a href={% url 'login' %} class="btn btn-outline-light">Sign in</a>
+
+</span>
+
+           {% endif %}
+
+</nav>
+</div>
