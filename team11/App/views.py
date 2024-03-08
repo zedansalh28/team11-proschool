@@ -21,19 +21,10 @@ from App.models import *
 from App.filters import *
 
 
-def adminPage(request):
-    userList = User.objects.all()[:3]
-    messageList = AdminMessage.objects.all()[:3]
-    totalusers = User.objects.all().count()
-    countTeacher = Teacher.objects.all().count()
-    countStudent = Student.objects.all().count()
-    context = {'userList': userList, 'messageList': messageList, 'totalusers': totalusers, 'countTeacher': countTeacher,
-               'countStudent': countStudent}
-    return render(request, 'dashboard.html', context)
 
 
-def home(requset):
-    return render(requset, 'home.html')
+
+
 
 
 def profile(request):
@@ -49,35 +40,6 @@ def profile(request):
     return render(request, 'profile.html', context)
 
 
-def login(request):
-    if request.user.is_authenticated == False:
-        if request.method == 'POST':
-            username = request.POST['username']
-            password = request.POST['password']
-            user = auth.authenticate(username=username, password=password)
-
-            if user is not None and user.groups.filter(name='admins').exists():
-                auth.login(request, user)
-                return redirect('dashboard')
-            elif user is not None and user.groups.filter(name='students').exists():
-                auth.login(request, user)
-                return redirect('student_dashboard')
-            elif user is not None and user.groups.filter(name='teachers').exists():
-                auth.login(request, user)
-                return redirect('teacher')
-            else:
-                messages.info(request, 'error')
-                return redirect('login')
-        else:
-
-            return render(request, 'login.html')
-    else:
-        if request.user.groups.filter(name='admins'):
-            return redirect('dashboard')
-        if request.user.groups.filter(name='students'):
-            return redirect('student_dashboard')
-        if request.user.groups.filter(name='teachers'):
-            return redirect('teacher')
 
 
 
