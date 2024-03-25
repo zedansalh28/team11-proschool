@@ -25,6 +25,37 @@ class User_edit_form(UserChangeForm):
     class Meta:
         model=User
         fields=('username','email',)
+class TeacherMessageForm(forms.ModelForm):
+    class Meta:
+        model = TeacherMessage
+        fields = '__all__'
+
+    def __init__(self, *args, **kwargs):
+        super(TeacherMessageForm, self).__init__(*args, **kwargs)
+
+
+class SolutionForm(forms.ModelForm):
+    class Meta:
+        model = StudentSolution
+        fields = ('student','homeWork','solutionContent')
+
+    def __init__(self, *args, **kwargs):
+        super(SolutionForm, self).__init__(*args, **kwargs)
+
+class studyForm(forms.ModelForm):
+    class Meta:
+        model = Studies
+        fields = '__all__'
+
+    def __init__(self, *args, **kwargs):
+        super(studyForm, self).__init__(*args, **kwargs)
+class BugReportForm(forms.ModelForm):
+    class Meta:
+        model = Bugreport
+        fields = '__all__'
+
+    def __init__(self, *args, **kwargs):
+        super(BugReportForm, self).__init__(*args, **kwargs)
 
 
 
