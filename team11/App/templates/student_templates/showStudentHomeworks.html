@@ -1,0 +1,55 @@
+{%  extends 'base.html' %}
+
+{% block content %}
+
+
+
+
+			<div class="col-md">
+				<div class="card card-body">
+					<h4>My HomeWorks</h4>
+
+				</div>
+				<div class="card card-body">
+					<table class="table">
+						<tr>
+					<th>HomeWork Title</th>
+
+					<th>Full acsses</th>
+                            <th>Add solution</th>
+                            <th>Edit solution</th>
+
+				</tr>
+
+                    {% for  hw , flag , sol in homeWorks_Exist  %}
+
+                    <tr>
+              <td> {{ hw.homeWorkTitle}}</td>
+                     <td>  <a class="btn btn-outline-success" href={% url 'showHomeWork' hw.id %}> show</a></td>
+
+                        {% if flag %}
+    <td><a href="{% url 'create_solution_new' hw.pk %}" class="btn btn-outline-success" >Add solution</a></td>
+                           <td> <button type="button" class="btn btn-warning" disabled>Edit solution</button></td>
+
+    {% else %}
+          <td><button type="button" class="btn btn-success" disabled>Add solution</button></td>
+          <td><a href="{% url 'edit_solution_new' hw.pk sol.pk %}" class="btn btn-outline-warning" >Edit solution</a></td>
+
+
+
+      {% endif %}
+
+
+
+                    </tr>
+                {% endfor %}
+						
+					</table>
+
+				</div>
+
+			</div>
+			
+		</div>
+
+{% endblock content %}

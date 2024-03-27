@@ -1,0 +1,91 @@
+{%  extends 'base.html' %}
+
+
+
+{% block content %}
+
+	<div class="col-md">
+
+<div class="alert alert-success" role="alert">
+  <h3 class="alert-heading">{{ message_list.messageTitle }}</h3>
+  <p>{{ message_list.messageContent}}</p>
+  <hr>
+  <p class="mb-0">Please read your teacher messages </p>
+</div>
+</div>
+
+<br>
+
+<div class="row">
+<div class="col">
+	<div class="col-md">
+		<h5>My lastest HomeWorks</h5>
+		<hr>
+		<div class="card card-body">
+			<a class="btn btn-outline-primary  " href="{% url "showhomeworkstudent" %}">All homeWorks</a>
+
+			<table class="table table-sm">
+				<tr>
+					<th>Title</th>
+
+
+					<th>Add solution</th>
+					<th>Edit solution</th>
+				</tr>
+                {% for  hw , flag , sol in homeWorks_Exist  %}
+
+                    <tr>
+              <td> {{ hw.homeWorkTitle}}</td>
+                     <td>  <a class="btn btn-outline-success" href={% url 'showHomeWork' hw.id %}> show</a></td>
+
+                        {% if flag %}
+    <td><a href="{% url 'create_solution_new' hw.pk %}" class="btn btn-outline-success" >Add solution</a></td>
+                           <td> <button type="button" class="btn btn-warning" disabled>Edit solution</button></td>
+
+    {% else %}
+          <td><button type="button" class="btn btn-success" disabled>Add solution</button></td>
+          <td><a href="{% url 'edit_solution_new' hw.pk sol.pk %}" class="btn btn-outline-warning" >Edit solution</a></td>
+
+
+
+      {% endif %}
+              </tr>
+                {% endfor %}
+
+			</table>
+		</div>
+    </div>
+	</div>
+<div class="col">
+
+	<div class="col-md">
+		<h5>my lastest Study</h5>
+		<hr>
+		<div class="card card-body">
+			<a class="btn btn-outline-primary  " href="{% url 'showAllStudies' %}">Show all studies</a>
+			<table class="table table-sm">
+				<tr>
+					<th>Title</th>
+
+
+
+					<th></th>
+				</tr>
+                {% for i in studies_list %}
+                    <tr>
+              <td> {{ i.title }}</td>
+                     <td>  <a class="btn btn-outline-success" href="{% url 'showstudy' i.id %}" role="button">show</a></td>
+
+
+
+                    </tr>
+                {% endfor %}
+
+			</table>
+		</div>
+    </div>
+	</div>
+
+</div>
+
+{% endblock %}
