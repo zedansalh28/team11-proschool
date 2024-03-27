@@ -83,12 +83,6 @@ def login(request):
 
 
 
-def logoutUser(request):
-    logout(request)
-    return redirect('login')
-
-
-
 
 
 
@@ -249,3 +243,11 @@ def showStudy(request ,id):
     study = Studies.objects.get(pk=id)
     contex = {'studies': study}
     return render(request, 'student_templates/allStudies.html', contex)
+
+def showSolutions(request):
+    teacher = Teacher.objects.get(user=request.user)
+    solutions = StudentSolution.objects.filter(teacher=teacher)
+    myFilter = StudentSolutionsFilter(request.GET, queryset=solutions)
+    solutions = myFilter.qs
+    context = {'solutions': solutions, 'myfilter': myFilter}
+    return render(request, "teacher_templates/all_solutions.html", context)

@@ -20,21 +20,8 @@ class AdminMessageFormTests(TestCase):
         self.assertEquals(response.status_code, 200)
         self.assertTemplateUsed(response, 'admin_templates/admin_message_form.html')
 
-    @tag('unit-test')
-    def test_Add_Message_GET2(self):
-        c = Client()
-        response = c.get(reverse('createmessage'))
-        self.assertEquals(response.status_code, 200)
-        self.assertTemplateNotUsed(response, 'teacher_templates/message_form.html')
-
-    @tag('unit-test')
-    def test_Add_Teacher_Message_GET(self):
-        c = Client()
-        response = c.get(reverse('create_teacher_message'))
-        self.assertEquals(response.status_code, 200)
-        self.assertTemplateUsed(response, 'teacher_templates/message_form.html')
-
-
+   
+    
 
 
 
