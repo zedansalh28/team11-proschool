@@ -98,6 +98,104 @@ class TeacherMessageFormTests(TestCase):
 
 class homeworkTest(TestCase):
 
+    '''def test_Add_homework_GET(self):
+        c = Client()
+        response = c.get(reverse('homework_form'))
+        self.assertEquals(response.status_code, 200)
+        self.assertTemplateUsed(response, 'homework_templates/homework_form.html')'''
+
+
+
+
+    '''def test_Add_homework_Template(self):
+        c = Client()
+        response = c.get(reverse('homework_form'))
+        self.assertEquals(response.status_code, 200)
+        self.assertTemplateNotUsed(response, 'login.html')'''
+
+    '''def test_AddHomeWork_POST(self):
+        c = Client()
+        response = c.post(reverse('homework_form'))
+        self.assertEquals(response.status_code, 302)
+        self.assertTemplateNotUsed(response, 'teacher_base.html')'''
+
+
+# ---------------------------------- test for Studies ---------------------------------------#
+class studiesTest(TestCase):
+    @tag('unit-test')
+    def test_Add_study_GET(self):
+        c = Client()
+        response = c.get(reverse('addstudy'))
+        self.assertEquals(response.status_code, 200)
+        self.assertTemplateUsed(response, 'studies_templates/study_form.html')
+
+    @tag('unit-test')
+    def test_Add_study_Template(self):
+        c = Client()
+        response = c.get(reverse('addstudy'))
+        self.assertEquals(response.status_code, 200)
+        self.assertTemplateNotUsed(response, 'login.html')
+
+
+
+
+# ================================ test for User ======================================#
+
+    @tag('unit-test')
+    def test_login(self):
+        login = self.client.login(username='test', password='test')
+        self.assertFalse(login)
+
+#=================================== test for Soltuions =========================================#
+class SoltuionsTest(TestCase):
+    @tag('unit-test')
+    def test_add_soltuion_GET(self):
+        c = Client()
+        response = c.get(reverse('Solution_form'))
+        self.assertEquals(response.status_code, 200)
+        self.assertTemplateUsed(response, 'student_solution.html')
+
+
+
+
+#=================================== test  =========================================#
+
+
+class loginTest(TestCase):
+
+    @tag('unit-test')
+    def test_login_access_url(self):
+        response = self.client.get('/login/')
+        self.assertEqual(response.status_code, 200)
+
+    @tag('unit-test')
+    def test_login_access_name(self):
+        response = self.client.get(reverse('login'))
+        self.assertEqual(response.status_code, 200)
+
+    @tag('unit-test')
+    def test_login_access_url_negative(self):
+        response = self.client.get('/login/')
+        self.assertNotEqual(response.status_code, 300)
+
+    @tag('unit-test')
+    def test_login_access_name_negative(self):
+        response = self.client.get(reverse('login'))
+        self.assertNotEqual(response.status_code, 300)
+
+    @tag('unit-test')
+    def testLoginUsedTemplate(self):
+        response = self.client.get(reverse('login'))
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response,'login.html')
+
+    @tag('unit-test')
+    def testLogin_NOT_UsedTemplate(self):
+        response = self.client.get(reverse('login'))
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateNotUsed(response,'home.html')
+
+    @tag('unit-test')
 
 
 
