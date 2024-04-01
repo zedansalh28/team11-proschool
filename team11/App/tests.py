@@ -248,6 +248,55 @@ class RegisterTest_Teacher(TestCase):
         response = self.client.get(reverse('Teacher_Signup'))
         self.assertNotEqual(response.status_code, 300)
 
+    @tag('unit-test')
+    def testRegisterUsedTemplate(self):
+        response = self.client.get(reverse('Teacher_Signup'))
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, 'teacher_templates/teacher_register.html')
+
+    @tag('unit-test')
+    def testRegister_NOT_UsedTemplate(self):
+        response = self.client.get(reverse('Teacher_Signup'))
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateNotUsed(response, 'home.html')
+
+    @tag('unit-test')
+    def testTeacherRegister(self):
+        User.objects.create(username='aa', password='aa')
+
+
+        data = {'first_name': 'a12', 'last_name': '1234','username':'username',
+                'password1':'password1','password2':'password2','id':'id','email':'email'}
+        response = self.client.post(reverse('Teacher_Signup'), data=data, follow=True)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(len(User.objects.filter(username='aa')),1)
+
+
+
+    @tag('integration-test')
+    def testRegisterTeacherAndLogin(self):
+        #User.objects.create(username='aa', password='aa')
+
+        data_login = {'username': 'aa', 'password': '1234'}
+        data_register = {'first_name': 'aa', 'last_name': '1234', 'username': 'username',
+                'password1': 'password1', 'password2': 'password2', 'id': 'id', 'email': 'email'}
+
+        response = self.client.post(reverse('Teacher_Signup'), data=data_register, follow=True)
+
+        self.assertEqual(response.status_code, 200)
+
+
+        response = self.client.post(reverse('login'), data=data_login, follow=True)
+
+
+        self.assertTemplateUsed(response, 'login.html')
+        self.assertRedirects(response, reverse('login'))
+
+
+    @tag('integration-test')
+    def testRegisterTeacherAndLoginAndLogout(self):
+        #User.objects.create(username='aa', password='aa')
+
 
 
 
