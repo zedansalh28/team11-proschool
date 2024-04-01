@@ -297,6 +297,71 @@ class RegisterTest_Teacher(TestCase):
     def testRegisterTeacherAndLoginAndLogout(self):
         #User.objects.create(username='aa', password='aa')
 
+        data_login = {'username': 'aa', 'password': '1234'}
+        data_register = {'first_name': 'aa', 'last_name': '1234', 'username': 'username',
+                'password1': 'password1', 'password2': 'password2', 'id': 'id', 'email': 'email'}
+
+        response = self.client.post(reverse('Teacher_Signup'), data=data_register, follow=True)
+
+        self.assertEqual(response.status_code, 200)
+
+
+        response = self.client.post(reverse('login'), data=data_login, follow=True)
+
+
+        self.assertTemplateUsed(response, 'login.html')
+        self.assertRedirects(response, reverse('login'))
+
+        response = self.client.get(reverse('logout'), follow=True)
+
+        # Assert
+        self.assertEqual(response.status_code, 200)
+        self.assertFalse(response.context["user"].is_authenticated)
+
+class RegisterTest_Student(TestCase):
+    @tag('unit-test')
+    def test_register_access_url(self):
+        response = self.client.get('/Student_Register/')
+        self.assertEqual(response.status_code, 200)
+
+    @tag('unit-test')
+    def test_register_access_name(self):
+        response = self.client.get(reverse('Student_Signup'))
+        self.assertEqual(response.status_code, 200)
+
+    @tag('unit-test')
+    def test_register_access_url_negative(self):
+        response = self.client.get('/Student_Register/')
+        self.assertNotEqual(response.status_code, 300)
+
+    @tag('unit-test')
+    def test_register_access_name_negative(self):
+        response = self.client.get(reverse('Student_Signup'))
+        self.assertNotEqual(response.status_code, 300)
+
+    @tag('unit-test')
+    def testRegisterUsedTemplate(self):
+        response = self.client.get(reverse('Student_Signup'))
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, 'student_templates/student_register.html')
+
+    @tag('unit-test')
+    def testRegister_NOT_UsedTemplate(self):
+        response = self.client.get(reverse('Student_Signup'))
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateNotUsed(response, 'home.html')
+
+    @tag('unit-test')
+    def testStudentRegister(self):
+        User.objects.create(username='aa', password='aa')
+
+
+        data = {'first_name': 'a12', 'last_name': '1234','username':'username',
+                'password1':'password1','password2':'password2','id':'id','email':'email'}
+        response = self.client.post(reverse('Teacher_Signup'), data=data, follow=True)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(len(User.objects.filter(username='aa')),1)
+
 
 
 
