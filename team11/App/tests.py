@@ -196,6 +196,57 @@ class loginTest(TestCase):
         self.assertTemplateNotUsed(response,'home.html')
 
     @tag('unit-test')
+def testUserLogin(self):
+
+        User.objects.create(username='aa', password='aa')
+
+        data = {'username': 'a12', 'password': '1234'}
+        response=self.client.post(reverse('login'),data=data,follow=True)
+        self.assertEqual(response.status_code,200)
+        '''the reason why it redircets to login that's this user doesnt belong to any group'''
+        self.assertRedirects(response, reverse('login'))
+
+    @tag('integration-test')
+    def testLoginAndLogout(self):
+        User.objects.create(username='aa', password='aa')
+
+        data = {'username': 'a12', 'password': '1234'}
+        response = self.client.post(reverse('login'), data=data, follow=True)
+        self.assertEqual(response.status_code, 200)
+        '''the reason why it redircets to login that's this user doesnt belong to any group'''
+        self.assertRedirects(response, reverse('login'))
+        self.assertTemplateUsed(response, 'login.html')
+
+
+
+
+        response = self.client.get(reverse('logout'), follow=True)
+
+        # Assert
+        self.assertEqual(response.status_code, 200)
+        self.assertFalse(response.context["user"].is_authenticated)
+
+
+class RegisterTest_Teacher(TestCase):
+    @tag('unit-test')
+    def test_register_access_url(self):
+        response = self.client.get('/Teacher_Register/')
+        self.assertEqual(response.status_code, 200)
+
+    @tag('unit-test')
+    def test_register_access_name(self):
+        response = self.client.get(reverse('Teacher_Signup'))
+        self.assertEqual(response.status_code, 200)
+
+    @tag('unit-test')
+    def test_register_access_url_negative(self):
+        response = self.client.get('/Teacher_Register/')
+        self.assertNotEqual(response.status_code, 300)
+
+    @tag('unit-test')
+    def test_register_access_name_negative(self):
+        response = self.client.get(reverse('Teacher_Signup'))
+        self.assertNotEqual(response.status_code, 300)
 
 
 
