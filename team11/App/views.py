@@ -452,3 +452,121 @@ def createSolution(request, id):
     SolutionFormSet = modelformset_factory(StudentSolution, form=SolutionForm,
                                            exclude=('homeWork', 'teacher', 'student',), extra=1)
     formset = SolutionFormSet(queryset=StudentSolution.objects.none())
+
+    if request.method == 'POST':
+        formset = SolutionFormSet(request.POST)
+        if formset.is_valid():
+            instance = formset.save(commit=False)
+            instance[0].student = student
+            instance[0].homeWork = homeWork
+            instance[0].teacher = teacher
+            instance[0].save()
+            return redirect('myHomeWorks')
+    context = {'form': formset,'homeWork':homeWork}
+    return render(request, 'student_templates/createSolution.html', context)
+
+
+def editSolution(request, id, sol_id):
+    student = Student.objects.get(user=request.user)
+    homeWork = HomeWork.objects.get(pk=id)
+    teacher = student.teacher
+    data = [{'student': student, 'homeWork': homeWork, 'teacher': teacher}]
+    SolutionFormSet = modelformset_factory(StudentSolution, form=SolutionForm,
+                                           exclude=('homeWork', 'teacher', 'student',), extra=0)
+    formset = SolutionFormSet(queryset=StudentSolution.objects.filter(pk=sol_id))
+
+    if request.method == 'POST':
+        formset = SolutionFormSet(request.POST)
+        if formset.is_valid():
+            if formset.has_changed():
+                instance = formset.save(commit=False)
+                instance[0].student = student
+                instance[0].homeWork = homeWork
+                instance[0].teacher = teacher
+                instance[0].save()
+            return redirect('myHomeWorks')
+    context = {'form': formset}
+    return render(request, 'student_templates/createSolution.html', context)
+
+
+# ------------------------------------- bug Views ----------------------------------#
+# @author Amar Alsana
+def bugreport(request):
+    if request.method == "GET":
+
+        form = BugReportForm()
+        return render(request, "bugReport_templates/bugReport_form.html", {'form': form})
+    else:
+
+        form = BugReportForm(request.POST)
+        if form.is_valid():
+            form.save()
+        return render(request, "bugReport_templates/thanks.html")
+
+        # @author Amar Alsana
+
+
+def showStudies(request):
+    studet = Student.objects.get(user=request.user)
+    studies = StudiesStudent.objects.filter(student=studet)
+    return render(request, "studies_templates/studies_to_show.html", {'studies': studies})
+
+
+def approveStudy(request, id):
+    studentStudy = StudiesStudent.objects.get(pk=id)
+    studentStudy.finishedFlag = True
+    studentStudy.save()
+    return redirect('showAllStudies')
+
+
+def showStudiesTeacher(request):
+    teacher = Teacher.objects.get(user=request.user)
+    studies = Studies.objects.filter(teacher=teacher)
+    return render(request, "studies_templates/studiesTable_template.html", {'studies': studies})
+
+
+def study_form(request, id=0):
+    # creating new form for inserting or editing existed admin messages
+    if request.method == "GET":
+        if id == 0:
+            form = studyForm()
+
+
+        else:
+            message = Studies.objects.get(pk=id)
+
+            form = studyForm(instance=message)
+
+        return render(request, "studies_templates/study_form.html", {'form': form})
+    else:
+        if id == 0:
+            form = studyForm(request.POST)
+            teacher = Teacher.objects.get(user=request.user)
+            student = Student.objects.filter(teacher=teacher)
+
+            for i in student:
+                new_study_student = StudiesStudent.objects.create(student=i, study=form.save(), finishedFlag=False)
+                new_study_student.save()
+
+        else:
+            study = Studies.objects.get(pk=id)
+            form = studyForm(request.POST, instance=study)
+        if form.is_valid():
+            form.save()
+        return redirect('showStudentTeacher')
+
+
+def study_delete(request, id):
+    study = Studies.objects.get(pk=id)
+    study.delete()
+    return redirect('showStudentTeacher')
+
+
+def user_list(request):
+    myFilter = userFilter(request.GET, queryset=User.objects.all())
+
+    user_list = myFilter.qs
+
+    context = {'user_list': user_list, 'myFilter': myFilter}
+
+    return render(request, "user_list.html", context)
