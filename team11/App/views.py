@@ -396,3 +396,59 @@ def showStudentHomeworks(request):
             homeWorks_Exist.append([hw,False,sol.first()])
         else:
             homeWorks_Exist.append([hw, True,None])
+
+
+
+    context = {'homework_list': homeworks, 'homeWorks_Exist': homeWorks_Exist}
+    return render(request, "student_templates/showStudentHomeworks.html", context)
+
+
+def showSingleHomeWork(request, id):
+    homework = HomeWork.objects.get(pk=id)
+    student = Student.objects.get(user=request.user)
+    form = HomeworkForm(instance=homework)
+    isSolutionExist=True
+    sol=StudentSolution.objects.filter(homeWork=homework,student=student,teacher=student.teacher)
+    if sol.count()>0:
+        isSolutionExist=False
+    context = {'homework': homework,'isSolutionExist':isSolutionExist,'solution':sol.first()}
+    return render(request, "student_templates/showSingleHomeWork.html", context)
+
+
+def Solution_form(request):
+    form = SolutionForm(request.POST or None)
+    if form.is_valid():
+        if request.user.is_authenticated:
+            student_username = request.user.username
+        form.student = student_username
+        form.save()
+    context = {
+        'form': form
+    }
+    return render(request, 'student_solution.html', context)
+
+
+def myGrades(request):
+    student = Student.objects.get(user=request.user)
+    solutions = StudentSolution.objects.filter(student=student)
+
+    grades = Grade.objects.filter(solution__in=solutions).all()
+    context = {'grades': grades}
+    return render(request, 'student_templates/studentGrades.html', context)
+
+
+def myTeacherComment(request, id):
+    grade = Grade.objects.get(pk=id)
+
+    context = {'grade': grade}
+    return render(request, 'student_templates/myteacherComment.html', context)
+
+
+def createSolution(request, id):
+    student = Student.objects.get(user=request.user)
+    homeWork = HomeWork.objects.get(pk=id)
+    teacher = student.teacher
+    data = [{'student': student, 'homeWork': homeWork, 'teacher': teacher}]
+    SolutionFormSet = modelformset_factory(StudentSolution, form=SolutionForm,
+                                           exclude=('homeWork', 'teacher', 'student',), extra=1)
+    formset = SolutionFormSet(queryset=StudentSolution.objects.none())
