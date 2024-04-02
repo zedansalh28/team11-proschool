@@ -195,3 +195,59 @@ def logoutUser(request):
     logout(request)
     return redirect('login')
 
+
+# -------------------------------------- Teacher Views ----------------------------------#
+# @author Amar Alsana
+def teacher_dashboard(request):
+    # created Dashboard for the Teacher that shown for the teacher after loging in
+
+    context = {'homework_list': HomeWork.objects.all(), 'message_list': TeacherMessage.objects.last(),
+               'studentcount': TeacherMessage.objects.all().count(),
+               'homeworkcount': HomeWork.objects.all().count(),
+               'adminMessage': AdminMessage.objects.first(),
+               }
+    # context = dictionary that content the whole elements that dashboard need to use
+    # @author Amar Alsana
+
+    return render(request, "teacher_templates/teacher_dashboard.html", context)
+
+
+def teacher_message_form(request, id=0):
+    # creating new form for inserting or editing existed teacher messages
+    if request.method == "GET":
+        if id == 0:
+            form = TeacherMessageForm()
+        else:
+            message = TeacherMessage.objects.get(pk=id)
+            form = TeacherMessageForm(instance=message)
+
+        return render(request, "teacher_templates/message_form.html", {'form': form})
+    else:
+        if id == 0:
+            form = TeacherMessageForm(request.POST)
+        else:
+            message = TeacherMessage.objects.get(pk=id)
+            form = TeacherMessageForm(request.POST, instance=message)
+        if form.is_valid():
+            form.save()
+        return redirect('teacher')
+
+
+def teacher_mesaage_delete(request, id):
+    message = TeacherMessage.objects.get(pk=id)
+    message.delete()
+    return redirect('teacher')
+
+
+def showMessages(request):
+    messages = list(TeacherMessage.objects.filter(teacher=request.user.teacher))
+    return render(request, "teacher_templates/all_messages.html", {'messages': messages})
+
+
+def showSolutions(request):
+    teacher = Teacher.objects.get(user=request.user)
+    solutions = StudentSolution.objects.filter(teacher=teacher)
+    myFilter = StudentSolutionsFilter(request.GET, queryset=solutions)
+    solutions = myFilter.qs
+    context = {'solutions': solutions, 'myfilter': myFilter}
+    return render(request, "teacher_templates/all_solutions.html", context)
