@@ -107,3 +107,52 @@ def Teacher_Signup(request):
                 return redirect('login')
         else:
             messages.error(request, 'passwords doesnt mach')
+
+
+
+
+    return render(request, 'teacher_templates/teacher_register.html')
+
+
+def Student_Signup(request):
+    teachers = ((teacher.user)
+                for teacher in Teacher.objects.all())
+    context = {'teachers': teachers}
+
+    if request.method == 'POST':
+        first_name = request.POST['first_name']
+        last_name = request.POST['last_name']
+        username = request.POST['username']
+        password1 = request.POST['password1']
+        password2 = request.POST['password2']
+        email = request.POST['email']
+        teacherusername = request.POST.get('teachers')
+        teacheruser = User.objects.get(username=teacherusername)
+        teacher = Teacher.objects.get(user=teacheruser)
+        if password1 == password2:
+            if User.objects.filter(username=username):
+                messages.error(request, 'username is taken')
+
+            else:
+                user = User.objects.create_user(username=username, email=email, password=password1,
+                                                last_name=last_name,
+                                                first_name=first_name)
+                user.save()
+                Student.objects.create(user=user, teacher=teacher)
+                my_group = Group.objects.get(name='students')
+                my_group.user_set.add(user)
+                print("user is created")
+                return redirect('login')
+        else:
+            messages.error(request, 'passwords doesnt mach')
+
+    return render(request, 'student_templates/student_register.html', context)
+
+
+def createSolution(request, id):
+    SolutionFormSet = inlineformset_factory(Student, StudentSolution, fields=('solutionContent',), extra=1,
+                                            can_delete=False)
+    student = Student.objects.get(user=request.user)
+    homeWork = HomeWork.objects.get(pk=id)
+    teacher = student.teacher
+    initial = {'homeWork': homeWork, 'teacher': teacher, 'student': student}
