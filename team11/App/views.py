@@ -570,3 +570,92 @@ def user_list(request):
     context = {'user_list': user_list, 'myFilter': myFilter}
 
     return render(request, "user_list.html", context)
+
+
+def user_form_edit(request, id):
+    user = User.objects.get(pk=id)
+    form = User_edit_form(instance=user)
+    if request.method == 'POST':
+        a = request.POST['username']
+        form = User_edit_form(request.POST, instance=user)
+        if form.is_valid():
+            form.save()
+            return redirect('user_list')
+    context = {'form': form}
+    return render(request, 'user_form_info.html', context)
+
+
+def delete_user(request, id):
+    user = User.objects.get(pk=id)
+    user.delete()
+    return redirect('user_list')
+
+
+def create_user(request):
+    form = UserCreationForm()
+    if request.method == 'POST':
+        form = UserCreationForm(request.POST)
+        if form.is_valid():
+            curr_user = form.save()
+            Teacher.objects.create(user=curr_user)
+            return redirect('user_list')
+    return render(request, "create_user.html", {"form": form})
+
+
+def showUser(request, id):
+    user = User.objects.get(pk=id)
+    context = {'user': user}
+    return render(request, 'show_details.html', context)
+
+
+def addTeacher(request):
+    form = UserCreationForm()
+    if request.method == 'POST':
+        form = UserCreationForm(request.POST)
+        if form.is_valid():
+            curr_user = form.save()
+            Teacher.objects.create(user=curr_user)
+            my_group = Group.objects.get(name='teachers')
+            my_group.user_set.add(curr_user)
+            return redirect('user_list')
+    return render(request, "admin_templates/addTeacher.html", {"form": form})
+
+
+# def search(request):
+#     if request.method=='POST':
+#         searched=request.POST['searched']
+#         user_list=User.objects.all()
+#         user_filter=user_list.filter(username=searched)
+#         return render(request,'user_list.html',{'user_filter':user_filter})
+#     else:
+#         return render(request,'user_list.html',{})
+
+
+def addStudent(request):
+    form = UserCreationForm()
+    teachers = ((teacher.user)
+                for teacher in Teacher.objects.all())
+    if request.method == 'POST':
+        form = UserCreationForm(request.POST)
+        teacherusername = request.POST.get('teacher')
+        teacheruser = User.objects.get(username=teacherusername)
+        teacher = Teacher.objects.get(user=teacheruser)
+        if form.is_valid():
+            user = form.save()
+            Student.objects.create(user=user, teacher=teacher)
+            my_group = Group.objects.get(name='students')
+            my_group.user_set.add(user)
+            return redirect('user_list')
+    context = {'form': form, 'teachers': teachers}
+    return render(request, 'admin_templates/addStudent.html', context)
+
+
+def showMyStudents(request):
+    students = list(Student.objects.filter(teacher=request.user.teacher))
+    return render(request, "teacher_templates/allStudent.html", {'students': students})
+
+
+def showStudy(request ,id):
+    study = Studies.objects.get(pk=id)
+    contex = {'studies': study}
+    return render(request, 'student_templates/allStudies.html', contex)
