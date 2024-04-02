@@ -156,3 +156,42 @@ def createSolution(request, id):
     homeWork = HomeWork.objects.get(pk=id)
     teacher = student.teacher
     initial = {'homeWork': homeWork, 'teacher': teacher, 'student': student}
+
+    formset = SolutionFormSet(queryset=StudentSolution.objects.none(), instance=student)
+    if request.method == 'POST':
+        formset = SolutionFormSet(request.POST, instance=student)
+        if formset.is_valid():
+            sol = formset.save(commit=False)
+            sol[0].homeWork = homeWork
+            sol[0].teacher = teacher
+            sol[0].save()
+            return redirect('student_dashboard')
+    context = {'form': formset}
+    return render(request, 'student_templates/createSolution.html', context)
+
+
+def editSolution(request, id):
+    if request.method == "GET":
+        if id == 0:
+            form = SolutionForm()
+        else:
+            solution = StudentSolution.objects.get(pk=id)
+            form = SolutionForm(instance=solution)
+        return render(request, "student_templates/EditSolution.html", {'form': form})
+
+    else:
+        if id == 0:
+            form = SolutionForm(request.POST)
+
+        else:
+            solution = StudentSolution.objects.get(pk=id)
+            form = SolutionForm(request.POST, instance=solution)
+        if form.is_valid():
+            form.save()
+        return redirect('student_dashboard')
+
+
+def logoutUser(request):
+    logout(request)
+    return redirect('login')
+
