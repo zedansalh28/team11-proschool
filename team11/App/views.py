@@ -302,3 +302,97 @@ def homework_form(request, id=0):
             form.save()
         return redirect('/teacher')
         # @author Amar Alsana
+
+
+def homework_delete(request, id):
+    # @author Amar Alsana
+    # delete existed Homework
+    homework = HomeWork.objects.get(pk=id)
+    homework.delete()
+    return redirect('/teacher')
+
+
+def showHomework(request):
+    student = Student.objects.get(user=request.user)
+    homeworks = HomeWork.objects.filter(teacher=student.teacher).all()
+    contex = {'homeworks': homeworks}
+    return render(request, 'homework_templates/all_homeworks_student.html', contex)
+
+
+
+
+# -------------------------------------- Admin Views ----------------------------------#
+def admin_message_form(request, id=0):
+    # creating new form for inserting or editing existed admin messages
+    if request.method == "GET":
+        if id == 0:
+            form = AdminMessageForm()
+
+
+
+
+        else:
+            message = AdminMessage.objects.get(pk=id)
+
+            form = AdminMessageForm(instance=message)
+
+        return render(request, "admin_templates/admin_message_form.html", {'form': form})
+    else:
+        if id == 0:
+            form = AdminMessageForm(request.POST)
+
+        else:
+            message = AdminMessage.objects.get(pk=id)
+            form = AdminMessageForm(request.POST, instance=message)
+        if form.is_valid():
+            form.save()
+        return redirect('dashboard')
+
+
+def admin_mesaage_delete(request, id):
+    message = AdminMessage.objects.get(pk=id)
+    message.delete()
+    return redirect('dashboard')
+
+
+def showAdminMessages(request):
+    messages = list(AdminMessage.objects.all())
+    return render(request, "admin_templates/all_messages.html", {'messages': messages})
+
+
+# -------------------------------------- student Views ----------------------------------#
+# @author Amar Alsana
+def student_dashboard(request):
+    # created Dashboard for the student that shown for the teacher after loging in
+    homeWorks_Exist = []
+
+    student = Student.objects.get(user=request.user)
+    homeworks = HomeWork.objects.filter(teacher=student.teacher).all()[:3]
+    for hw in homeworks:
+        sol = StudentSolution.objects.filter(homeWork=hw, student=student, teacher=student.teacher)
+        if sol.count() > 0:
+            homeWorks_Exist.append([hw, False, sol.first()])
+        else:
+            homeWorks_Exist.append([hw, True, None])
+
+    context = {'homeWorks_Exist': homeWorks_Exist,
+               'message_list': TeacherMessage.objects.filter(teacher=student.teacher).last(),
+               'adminMessage': AdminMessage.objects.last(), 'grade_list': Grade.objects.last(),
+               'studies_list': Studies.objects.filter(teacher=student.teacher).all()[:3]
+               }
+    # context = dictionary that content the whole elements that dashboard need to use
+
+    return render(request, "student_templates/studentDashBoard.html", context)
+
+
+def showStudentHomeworks(request):
+    homeWorks_Exist = []
+
+    student = Student.objects.get(user=request.user)
+    homeworks = HomeWork.objects.filter(teacher=student.teacher)
+    for hw in homeworks:
+        sol = StudentSolution.objects.filter(homeWork=hw, student=student, teacher=student.teacher)
+        if sol.count()>0:
+            homeWorks_Exist.append([hw,False,sol.first()])
+        else:
+            homeWorks_Exist.append([hw, True,None])
