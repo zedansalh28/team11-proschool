@@ -47,3 +47,63 @@ def profile(request):
 
     context = {'form': form}
     return render(request, 'profile.html', context)
+
+
+def login(request):
+    if request.user.is_authenticated == False:
+        if request.method == 'POST':
+            username = request.POST['username']
+            password = request.POST['password']
+            user = auth.authenticate(username=username, password=password)
+
+            if user is not None and user.groups.filter(name='admins').exists():
+                auth.login(request, user)
+                return redirect('dashboard')
+            elif user is not None and user.groups.filter(name='students').exists():
+                auth.login(request, user)
+                return redirect('student_dashboard')
+            elif user is not None and user.groups.filter(name='teachers').exists():
+                auth.login(request, user)
+                return redirect('teacher')
+            else:
+                messages.info(request, 'error')
+                return redirect('login')
+        else:
+
+            return render(request, 'login.html')
+    else:
+        if request.user.groups.filter(name='admins'):
+            return redirect('dashboard')
+        if request.user.groups.filter(name='students'):
+            return redirect('student_dashboard')
+        if request.user.groups.filter(name='teachers'):
+            return redirect('teacher')
+
+
+def Teacher_Signup(request):
+    if request.method == 'POST':
+        first_name = request.POST['first_name']
+        last_name = request.POST['last_name']
+        username = request.POST['username']
+        password1 = request.POST['password1']
+        password2 = request.POST['password2']
+        id = request.POST['id']
+        email = request.POST['email']
+        if password1 == password2:
+            if not TeacherId.objects.filter(teacherId=id).count() == 1:
+                messages.error(request, 'your id is wrong')
+            elif User.objects.filter(username=username):
+                messages.error(request, 'username is taken')
+
+            else:
+                user = User.objects.create_user(username=username, email=email, password=password1,
+                                                last_name=last_name,
+                                                first_name=first_name)
+                user.save()
+                Teacher.objects.create(user=user)
+                my_group = Group.objects.get(name='teachers')
+                my_group.user_set.add(user)
+                print("user is created")
+                return redirect('login')
+        else:
+            messages.error(request, 'passwords doesnt mach')
