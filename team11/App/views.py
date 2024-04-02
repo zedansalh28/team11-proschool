@@ -251,3 +251,54 @@ def showSolutions(request):
     solutions = myFilter.qs
     context = {'solutions': solutions, 'myfilter': myFilter}
     return render(request, "teacher_templates/all_solutions.html", context)
+
+
+# ------------------------ Grades Views ---------------------
+def addGrade(request, id):
+    GradeFormSet = inlineformset_factory(StudentSolution, Grade, fields=('grade', 'teacherComment'), extra=1)
+    solution = StudentSolution.objects.get(pk=id)
+    formset = GradeFormSet(instance=solution)
+    # form = OrderForm(initial={'customer':customer})
+    if request.method == 'POST':
+        # print('Printing POST:', request.POST)
+        # form = OrderForm(request.POST)
+        formset = GradeFormSet(request.POST, instance=solution)
+        if formset.is_valid():
+            formset.save()
+            return redirect('teacher')
+
+    context = {'form': formset, 'solution': solution}
+    return render(request, 'teacher_templates/addGrade.html', context)
+
+
+# -------------------------------------- homework Views ----------------------------------#
+def homework_form(request, id=0):
+    user=User.objects.get(username=request.user)
+    teacher=Teacher.objects.get(user=user)
+    data={'teacher':teacher}
+    # creating new form for inserting or editing existed homework
+    if request.method == "GET":
+        if id == 0:
+            form = HomeworkForm(initial=data)
+
+
+
+
+        else:
+            homework = HomeWork.objects.get(pk=id)
+            form = HomeworkForm(instance=homework,initial=data)
+
+        return render(request, "homework_templates/homework_form.html", {'form': form})
+    else:
+        if id == 0:
+            form = HomeworkForm(request.POST,initial=data)
+
+        else:
+            homework = HomeWork.objects.get(pk=id)
+            form = HomeworkForm(request.POST, instance=homework,initial=data)
+        if form.is_valid():
+            # homework_1 = form.save(commit=False)
+            # homework_1.teacher = Teacher.objects.get(user = request.user)
+            form.save()
+        return redirect('/teacher')
+        # @author Amar Alsana
