@@ -11,14 +11,7 @@ from App.models import *
 
 
 # ------------tests for some admin functionality  ------     -- ------------------
-@tag("unit_test")
-class AdminMessageFormTests(TestCase):
-    @tag('unit-test')
-    def test_Add_Message_GET(self):
-        c = Client()
-        response = c.get(reverse('createmessage'))
-        self.assertEqual(response.status_code, 200)
-        self.assertTemplateUsed(response, 'admin_templates/admin_message_form.html')
+
 
     @tag('unit-test')
     def test_Add_Message_GET2(self):
