@@ -197,7 +197,7 @@ def logoutUser(request):
 
 
 # -------------------------------------- Teacher Views ----------------------------------#
-# @author Amar Alsana
+# 
 def teacher_dashboard(request):
     # created Dashboard for the Teacher that shown for the teacher after loging in
 
@@ -207,7 +207,7 @@ def teacher_dashboard(request):
                'adminMessage': AdminMessage.objects.first(),
                }
     # context = dictionary that content the whole elements that dashboard need to use
-    # @author Amar Alsana
+    # 
 
     return render(request, "teacher_templates/teacher_dashboard.html", context)
 
@@ -301,11 +301,11 @@ def homework_form(request, id=0):
             # homework_1.teacher = Teacher.objects.get(user = request.user)
             form.save()
         return redirect('/teacher')
-        # @author Amar Alsana
+        # 
 
 
 def homework_delete(request, id):
-    # @author Amar Alsana
+    # 
     # delete existed Homework
     homework = HomeWork.objects.get(pk=id)
     homework.delete()
@@ -361,7 +361,7 @@ def showAdminMessages(request):
 
 
 # -------------------------------------- student Views ----------------------------------#
-# @author Amar Alsana
+# 
 def student_dashboard(request):
     # created Dashboard for the student that shown for the teacher after loging in
     homeWorks_Exist = []
@@ -490,7 +490,7 @@ def editSolution(request, id, sol_id):
 
 
 # ------------------------------------- bug Views ----------------------------------#
-# @author Amar Alsana
+# 
 def bugreport(request):
     if request.method == "GET":
 
@@ -503,7 +503,7 @@ def bugreport(request):
             form.save()
         return render(request, "bugReport_templates/thanks.html")
 
-        # @author Amar Alsana
+        # 
 
 
 def showStudies(request):
